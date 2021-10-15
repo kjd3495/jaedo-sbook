@@ -17,7 +17,7 @@ const Navbar = () => {
     const handleQuestion = (e)=> {
         e.preventDefault();
         setOpenModal(false);
-        db.collection("questions").add({  
+        db.collection("questions").add({      
             question:input,
             imageUrl:inputUrl, 
             timestamp:firebase.firestore.FieldValue.serverTimestamp(),
@@ -27,7 +27,7 @@ const Navbar = () => {
         setInputUrl("");
     }
     return (
-        <div className="navbar">
+        <div className="navbar">  
             <div className="logo">
             <h1>JaeDo's book</h1>
             </div> 

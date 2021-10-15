@@ -1,5 +1,7 @@
 import { Avatar, Button } from '@material-ui/core'
-import { ArrowDownwardOutlined, ArrowUpwardOutlined, ChatBubbleOutlineOutlined, MoreHorizOutlined, RepeatOneOutlined, ShareOutlined} from '@material-ui/icons'
+import { ChatBubbleOutlineOutlined, MoreHorizOutlined, RepeatOneOutlined, ShareOutlined} from '@material-ui/icons'
+import ThumbUpAltSharpIcon from '@mui/icons-material/ThumbUpAltSharp';
+import ThumbDownSharpIcon from '@mui/icons-material/ThumbDownSharp';
 import React, {useEffect, useState} from 'react';
 import { selectUser } from '../features/userSlice'
 import {useSelector, useDispatch} from 'react-redux'
@@ -8,7 +10,7 @@ import {selectQuestionId, selectQuestionName, setQuestionInfo } from '../feature
 import Modal from 'react-modal';
 import db from '../firebase';
 import firebase from 'firebase';
-const Post = ({key, Id, image, question,timestamp, QuestionUser}) => { 
+const Post = ({Id, image, question,timestamp, QuestionUser}) => { 
     const questionId = useSelector(selectQuestionId);
     const questionName = useSelector(selectQuestionName);
     const user = useSelector(selectUser);
@@ -131,8 +133,10 @@ const Post = ({key, Id, image, question,timestamp, QuestionUser}) => {
             </div>
             <div className="post_footer">
                <div className="post_footerAction">
-                   <ArrowUpwardOutlined/>
-                   <ArrowDownwardOutlined/>
+                   <ThumbUpAltSharpIcon/>
+                   <div class="like">0</div>
+                   <ThumbDownSharpIcon/>
+                   <div className="dislike">0</div>
                </div>
                <RepeatOneOutlined/>
                <ChatBubbleOutlineOutlined/>

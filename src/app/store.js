@@ -4,6 +4,6 @@ import questionReducer from '../features/questionSlice'
 export default configureStore({
     reducer: {
         user:userReducer,
-        answer:questionReducer
+        question:questionReducer
     },
 })

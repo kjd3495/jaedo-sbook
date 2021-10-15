@@ -52,7 +52,9 @@
 
 
 }
-
+.search > input:focus{
+    outline: none;
+}
 .search >.MuiSvgIcon-root {
     color:yellowgreen;
 

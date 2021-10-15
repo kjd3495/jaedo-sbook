@@ -94,8 +94,11 @@
 }
 .post_footerAction > .MuiSvgIcon-root{
     color:black;
-    margin-right:40px;
+    margin-right:10px;
     cursor:pointer;
+}
+.like {
+    margin-right: 5px;
 }
 
 .post_footerAction>.MuiSvgIcon-root:hover{
