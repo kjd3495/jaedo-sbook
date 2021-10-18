@@ -8,12 +8,14 @@ import { selectUser } from '../features/userSlice';
 import db, { auth } from '../firebase';
 import Modal from 'react-modal'
 import firebase from 'firebase';
+import { selectDislike, selectLike } from '../features/likeSlice';
 const Navbar = () => {
     const user = useSelector(selectUser);
     const [ openModal, setOpenModal]= useState(false);
     const[input, setInput] = useState("");
     const[inputUrl, setInputUrl]= useState("");
-
+    const like = useSelector(selectLike);
+    const dislike = useSelector(selectDislike);
     const handleQuestion = (e)=> {
         e.preventDefault();
         setOpenModal(false);
@@ -22,6 +24,8 @@ const Navbar = () => {
             imageUrl:inputUrl, 
             timestamp:firebase.firestore.FieldValue.serverTimestamp(),
             user:user,
+            like:like,
+            dislike:dislike
         });
         setInput("");
         setInputUrl("");

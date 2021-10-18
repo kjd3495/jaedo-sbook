@@ -23,7 +23,9 @@ const Feed = () => {
                 image={question.imageUrl}
                 question={question.question}
                 timestamp={question.timestamp}
-                QuestionUser={question.user}/>
+                QuestionUser={question.user}
+                like={question.like}
+                dislike={question.dislike}/>
             )
             )}
             

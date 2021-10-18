@@ -6,13 +6,16 @@ import React, {useEffect, useState} from 'react';
 import { selectUser } from '../features/userSlice'
 import {useSelector, useDispatch} from 'react-redux'
 import '../styles/Post.css'
+import {selectDislike, selectLike, setLike, setDislike} from '../features/likeSlice'
 import {selectQuestionId, selectQuestionName, setQuestionInfo } from '../features/questionSlice';
 import Modal from 'react-modal';
 import db from '../firebase';
 import firebase from 'firebase';
-const Post = ({Id, image, question,timestamp, QuestionUser}) => { 
+const Post = ({Id, image, question,timestamp, QuestionUser, like, dislike}) => { 
     const questionId = useSelector(selectQuestionId);
     const questionName = useSelector(selectQuestionName);
+    const Like = useSelector(selectLike);
+    const Dislike = useSelector(selectDislike);
     const user = useSelector(selectUser);
     const [answer, setAnswer] =useState("");
     const [openModal, setOpenModal] = useState(false);
@@ -29,6 +32,8 @@ const Post = ({Id, image, question,timestamp, QuestionUser}) => {
             })
         }
     },[questionId]);
+
+
     const onAnswerDelte = (id) => {
         db.collection('questions').doc(questionId).collection('answer').doc(id).delete()
     }
@@ -50,6 +55,15 @@ const Post = ({Id, image, question,timestamp, QuestionUser}) => {
             setAnswer("")
             setOpenModal(false)
         }
+    }
+    const likeUp =() => {
+        dispatch(setLike());
+        like=Like;
+
+    }
+    const disLikeUp = () => {
+        dispatch(setDislike());
+        dislike=Dislike;
     }
     return (
         <div className="post"
@@ -125,7 +139,7 @@ const Post = ({Id, image, question,timestamp, QuestionUser}) => {
                             )}
                             </p>
                         )
-                      )
+                        )
                     }
             </div>
                 <img src={image}alt=""/>
@@ -133,10 +147,10 @@ const Post = ({Id, image, question,timestamp, QuestionUser}) => {
             </div>
             <div className="post_footer">
                <div className="post_footerAction">
-                   <ThumbUpAltSharpIcon/>
-                   <div class="like">0</div>
-                   <ThumbDownSharpIcon/>
-                   <div className="dislike">0</div>
+                   <ThumbUpAltSharpIcon onClick={likeUp}/>
+                   <div class="like">{like}</div>
+                   <ThumbDownSharpIcon onClick={disLikeUp}/>
+                   <div className="dislike">{dislike}</div>
                </div>
                <RepeatOneOutlined/>
                <ChatBubbleOutlineOutlined/>
