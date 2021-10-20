@@ -10,6 +10,7 @@ const Feed = () => {
             (doc)=> ({
             id:doc.id,
             question : doc.data()
+            
         })
         )))
     },[])

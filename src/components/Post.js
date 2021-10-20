@@ -6,7 +6,7 @@ import React, {useEffect, useState} from 'react';
 import { selectUser } from '../features/userSlice'
 import {useSelector, useDispatch} from 'react-redux'
 import '../styles/Post.css'
-import {selectDislike, selectLike, setLike, setDislike} from '../features/likeSlice'
+import {selectDislike, selectLike, setLike, setDislike, resetDislike, resetLike} from '../features/likeSlice'
 import {selectQuestionId, selectQuestionName, setQuestionInfo } from '../features/questionSlice';
 import Modal from 'react-modal';
 import db from '../firebase';
@@ -32,6 +32,10 @@ const Post = ({Id, image, question,timestamp, QuestionUser, like, dislike}) => {
             })
         }
     },[questionId]);
+    useEffect(()=> {
+        dispatch(resetLike());
+        dispatch(resetDislike());
+    },[like,dislike,dispatch])
 
 
     const onAnswerDelte = (id) => {
@@ -58,12 +62,12 @@ const Post = ({Id, image, question,timestamp, QuestionUser, like, dislike}) => {
     }
     const likeUp =() => {
         dispatch(setLike());
-        like=Like;
+        db.collection('questions').doc(Id).update({like:like+Like})
 
     }
     const disLikeUp = () => {
         dispatch(setDislike());
-        dislike=Dislike;
+        db.collection('questions').doc(Id).update({dislike:dislike+Dislike})
     }
     return (
         <div className="post"
@@ -159,7 +163,7 @@ const Post = ({Id, image, question,timestamp, QuestionUser, like, dislike}) => {
                 <MoreHorizOutlined/>
                </div>
            </div>
-        </div>
+        </div> 
     )
 }
 

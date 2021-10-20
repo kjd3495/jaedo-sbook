@@ -12,6 +12,12 @@ export const likeSlice = createSlice({
         },
         setDislike: state=> {
             state.dislike ++;
+        },
+        resetLike: state=>{
+            state.like = 0;
+        },
+        resetDislike: state => {
+            state.dislike = 0;
         }
         
     },
@@ -19,7 +25,7 @@ export const likeSlice = createSlice({
 
 
 });
-export const {setLike,setDislike} = likeSlice.actions;
+export const {setLike,setDislike,resetDislike, resetLike} = likeSlice.actions;
 
 export const selectLike = state => state.like.like;
 
