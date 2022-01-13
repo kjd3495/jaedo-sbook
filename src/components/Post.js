@@ -9,8 +9,6 @@ import '../styles/Post.css'
 import {selectDislike, selectLike, setLike, setDislike, resetDislike, resetLike} from '../features/likeSlice'
 import {selectQuestionId, selectQuestionName, setQuestionInfo } from '../features/questionSlice';
 import Modal from 'react-modal';
-import db from '../firebase';
-import firebase from 'firebase';
 const Post = ({Id, image, question,timestamp, QuestionUser, like, dislike}) => { 
     const questionId = useSelector(selectQuestionId);
     const questionName = useSelector(selectQuestionName);
@@ -21,45 +19,12 @@ const Post = ({Id, image, question,timestamp, QuestionUser, like, dislike}) => {
     const [openModal, setOpenModal] = useState(false);
     const dispatch = useDispatch();
     const [getAnswer, setGetAnswer] = useState([]);
-    useEffect(()=> {
-        if(questionId) {
-            db.collection('questions').doc(questionId).collection('answer').orderBy('timestamp','desc')
-            .onSnapshot((snapshot)=> {
-                setGetAnswer(
-                    snapshot.docs.map((doc)=>
-                    ({id:doc.id, answers:doc.data()}))
-                )
-            })
-        }
-    },[questionId]);
+    
     useEffect(()=> {
         dispatch(resetLike());
         dispatch(resetDislike());
     },[like,dislike,dispatch])
-
-
-    const onAnswerDelte = (id) => {
-        db.collection('questions').doc(questionId).collection('answer').doc(id).delete()
-    }
-    const onDelete = () =>{
-        db.collection('questions').doc(questionId).delete();
-    }
-    const handleAnswer = (e) => {
-        e.preventDefault(); 
-
-        if(questionId){
-            db.collection('questions').doc(questionId).collection('answer').add({
-                    questionId: questionId,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    answer:answer,
-                    user:user,
-            })
-
-            console.log(questionId, questionName, answer)
-            setAnswer("")
-            setOpenModal(false)
-        }
-    }
+/*
     const likeUp =() => {
         dispatch(setLike());
         db.collection('questions').doc(Id).update({like:like+Like})
@@ -68,7 +33,7 @@ const Post = ({Id, image, question,timestamp, QuestionUser, like, dislike}) => {
     const disLikeUp = () => {
         dispatch(setDislike());
         db.collection('questions').doc(Id).update({dislike:dislike+Dislike})
-    }
+    }*/
     return (
         <div className="post"
         onClick={()=> dispatch(setQuestionInfo({
@@ -111,7 +76,7 @@ const Post = ({Id, image, question,timestamp, QuestionUser, like, dislike}) => {
                         <textarea placeholder="답변을 작성해주세요" type ="text" value={answer} onChange={(e)=>setAnswer(e.target.value)}/>
                     </div>
                     <div className="modal_buttons"> 
-                    <button type="text" className="add" onClick={handleAnswer}>등록하기</button>
+                    <button type="text" className="add" >등록하기</button>
                     <button onClick={()=> setOpenModal(false)} className="can">닫기</button>
                     </div>
                 </Modal>
@@ -136,7 +101,7 @@ const Post = ({Id, image, question,timestamp, QuestionUser, like, dislike}) => {
                                             {answers.user.displayName ? answers.user.displayName : answers.user.email}
                                             </span>{""} {new Date(answers.timestamp?.toDate()).toLocaleString()}에 작성됨
                                             </span>
-                                            <Button onClick={()=>{onAnswerDelte(id)}}>댓글삭제</Button>
+                                            <Button >댓글삭제</Button>
                                             </span> ) : (
                                                 " "
                                             
@@ -147,13 +112,13 @@ const Post = ({Id, image, question,timestamp, QuestionUser, like, dislike}) => {
                     }
             </div>
                 <img src={image}alt=""/>
-                <Button onClick={onDelete}>글삭제</Button>
+                <Button>글삭제</Button>
             </div>
             <div className="post_footer">
                <div className="post_footerAction">
-                   <ThumbUpAltSharpIcon onClick={likeUp}/>
+                   <ThumbUpAltSharpIcon/>
                    <div class="like">{like}</div>
-                   <ThumbDownSharpIcon onClick={disLikeUp}/>
+                   <ThumbDownSharpIcon/>
                    <div className="dislike">{dislike}</div>
                </div>
                <RepeatOneOutlined/>

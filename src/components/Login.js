@@ -1,35 +1,76 @@
-import { ArrowForwardIos} from '@material-ui/icons'
-import React,{useState} from 'react'
-import {auth, provider} from '../firebase'
+import { ArrowForwardIos, NavigateBefore} from '@material-ui/icons'
+import axios from 'axios'
+import React,{useState, useEffect} from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import{ useNavigate} from 'react-router-dom'
 import '../styles/Login.css'
+import { login } from '../features/userSlice'
+import  Modal from 'react-modal'
+import moment from 'moment'
+import 'moment/locale/ko'
+
 const Login = () => {
     const[email,setEmail]=useState("");
     const[password,setPassword]= useState("");
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [openModal, setOpenModal] = useState(false);
+    const [nickname, setNickname] = useState('')
+    const [name, setName] = useState('')
+    const [passwordCheck, setPasswordCheck] = useState('')
+    const [passEmail, setPassEmail] = useState(false)
+    const [passNickname, setPassNickname] = useState(false)
+    const [pwMessage, setPwMessage] = useState('비밀번호가 일치하지 않습니다')
 
-    const handleLogin=(e)=>{
-        e.preventDefault();
-
-        auth.signInWithEmailAndPassword(email, password).then(
-            auth => {
-                console.log(auth);
-            }).catch((e)=> alert(e.message));
-        setEmail("");
-        setPassword("");
+    const handleLogin=()=>{
+        axios.post('http://localhost:8000/user/login', {
+            user_email:email,
+            user_pw:password
+        }).then(res =>{
+            if(res.data.UserEmail){
+                dispatch(login({
+                    user_email : res.data.UserEmail,
+                    user_nickname:res.data.NickName,
+                    user_name:res.data.Name,
+                    user_adminAuth: res.data.AdminAuth,
+                    user_date : res.data.CreateDate
+                }));
+                
+            }else {
+                alert(res.data.message);
+            }
+        })
     }
-    const handleRegister=(e)=> {
-        e.preventDefault();
-        auth.createUserWithEmailAndPassword(email,password).then(auth=>{
-                if(auth){
-                    console.log(auth);
-                }
-        }).catch((e)=>alert(e.message));
-        setEmail("");
-        setPassword("");
+    const onCreate = () =>{
+        axios.post('http://localhost:8000/user/register',{
+            user_email : email,
+            user_nickname : nickname,
+            createDate :  moment().format('YYYY-MM-DD HH:mm:ss'),
+            user_pw : password,
+            user_name : name
+        }).then(setOpenModal(false))
+        .then(res=>alert(res.data))
+        
     }
-    const signIn = () =>{
-        auth.signInWithPopup(provider).catch(e=> alert(e.message));
-
-        console.log(auth);
+    const emailCheck = () =>{
+        axios.post('http://localhost:8000/check/email',{
+            user_email : email
+        }).then(res=>{
+            if(!res.data){
+                alert('사용가능한 이메일입니다');
+                setPassEmail(true);
+            }
+            })
+    }
+    const nicknameCheck = () =>{
+        axios.post('http://localhost:8000/check/nickname',{
+            user_nickname : nickname
+        }).then(res=>{
+            if(!res.data){
+                alert('사용가능한 닉네임입니다')
+                setPassNickname(true);
+            }
+        })
     }
     return (
         <div className="login">
@@ -48,7 +89,7 @@ const Login = () => {
                 <div className="login_authOptions">
                     <div className= "login_authOption">
                         <img className="login_googleAuth" src="https://media-public.canva.com/MADnBiAubGA/3/screen.svg" alt=""/>
-                        <p onClick={signIn}>구글 아이디 로그인</p>
+                        <p>구글 아이디 로그인</p>
                     </div>
                     <div className="login_authOption">
                         <img className="login_googleAuth" src="https://1000logos.net/wp-content/uploads/2016/11/Facebook-logo-500x350.png" alt=""/>
@@ -94,7 +135,42 @@ const Login = () => {
                         <small>비밀번호 찾기</small>
                         <button type ="submit" onClick={handleLogin}>로그인</button>
                     </div>
-                <button onClick={handleRegister}>회원가입</button>
+                <button onClick={()=>setOpenModal(true)}>회원가입</button>
+                <Modal isOpen={openModal} onRequestClose={()=>setOpenModal(false)}
+                shouldCloseOnOverlayClick={false}
+                ariaHideApp={false}
+                style={{
+                    overlay: {
+                        width: 700,
+                        height: 600,
+                        backgroundColor: "rgba(0,0,0,0.8)",
+                        zIndex: "1000",
+                        top: "50%",
+                        left: "50%",
+                        marginTop: "-300px",
+                        marginLeft: "-350px",
+                    }
+                }}>
+                    <div className="modal_create"> 
+                    <div className="create">
+                <div className='create_rap'><div className='createTitle'><strong>회원가입</strong></div></div>
+                <div className="create_inputFields">
+                <div className='create_check_rap'><div className="create_check"><input className="create_input" type="email" name="user_email" id="email" placeholder="이메일을 입력해 주세요" value={email} onChange={(e)=>{setEmail(e.target.value); setPassEmail(false)}}/></div><br/><button type="submit" onClick={emailCheck} className="emailCheck_btn">중복확인</button></div>
+                <div className="create_inputField"><input className="create_input" type="password" name="user_pw" id="password" placeholder="비밀번호를 입력해 주세요." value={password} onChange={(e)=>{setPassword(e.target.value)}}/></div>
+                <div className='create_check_rap'><div className="create_check"><input className="create_input" type="password" id="passwordCheck" placeholder="비밀번호를 다시 입력해 주세요." value={passwordCheck} onChange={(e)=>{setPasswordCheck(e.target.value)}}/></div><br/><span style={pwMessage==='비밀번호가 일치합니다'?{color:'green'}:{color:'red'}}>{pwMessage}</span></div>
+                <div className="create_inputField"><input className="create_input" type="name" name="user_name"id="name" placeholder="이름을 입력해 주세요." value={name} onChange={(e)=>{setName(e.target.value)}}/></div>
+                <div className="create_check_rap"><div className='create_check'><input className="create_input" type="nickname"name="user_nickname" id="nickname" placeholder="닉네임을 입력해 주세요." value={nickname} onChange={(e)=>{setNickname(e.target.value); setPassNickname(false)}}/></div><br/><button type="submit" onClick={nicknameCheck} className="nicknameCheck_btn">중복확인</button></div>
+                
+                </div>
+                <div className="create_footer">
+                    <div className='createBtn'>
+                    <button type="submit" onClick={onCreate} className="createUser_btn">가입하기</button>
+                    </div>
+                </div>
+            </div>
+
+                    </div>
+                </Modal>
                 </div>
             </div>
     <div className="login_lang">

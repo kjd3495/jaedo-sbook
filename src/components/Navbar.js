@@ -2,13 +2,12 @@ import { Avatar, Button, Input} from '@material-ui/core'
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Search, AssignmentIndOutlined, BorderAllRounded, Home, NotificationsOutlined, PeopleAltOutlined, Language, ExpandMore, Link } from '@material-ui/icons'
 import React, {useState} from 'react'
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import '../styles/Navbar.css'
-import { selectUser } from '../features/userSlice';
-import db, { auth } from '../firebase';
+import { selectUser, logout } from '../features/userSlice';
 import Modal from 'react-modal'
-import firebase from 'firebase';
 import { selectDislike, selectLike } from '../features/likeSlice';
+import axios from 'axios';
 const Navbar = () => {
     const user = useSelector(selectUser);
     const [ openModal, setOpenModal]= useState(false);
@@ -16,19 +15,19 @@ const Navbar = () => {
     const[inputUrl, setInputUrl]= useState("");
     const like = useSelector(selectLike);
     const dislike = useSelector(selectDislike);
+    const dispatch = useDispatch()
+
     const handleQuestion = (e)=> {
         e.preventDefault();
         setOpenModal(false);
-        db.collection("questions").add({      
-            question:input,
-            imageUrl:inputUrl, 
-            timestamp:firebase.firestore.FieldValue.serverTimestamp(),
-            user:user,
-            like:like,
-            dislike:dislike
-        });
+        
         setInput("");
         setInputUrl("");
+    }
+    const useLogout = () =>{
+        axios.get('http://localhost:8000/user/logout',{},{ withCredentials : true })
+        .then(dispatch(logout()))
+        
     }
     return (
         <div className="navbar">  
@@ -61,7 +60,7 @@ const Navbar = () => {
                     <Avatar src={user.photo}/>
                 </div>
                 <div className="logout">
-                    <LogoutIcon onClick={()=>auth.signOut()}/>
+                    <LogoutIcon onClick={useLogout}/>
                 </div>
                 <Language/>
                 <Button onClick={()=>setOpenModal(true)}>글쓰기</Button>
