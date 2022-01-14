@@ -4,7 +4,7 @@ import { Search, AssignmentIndOutlined, BorderAllRounded, Home, NotificationsOut
 import React, {useState} from 'react'
 import {useSelector, useDispatch} from 'react-redux';
 import '../styles/Navbar.css'
-import { selectUser, logout } from '../features/userSlice';
+import { selectUser, logout, loadingState } from '../features/userSlice';
 import Modal from 'react-modal'
 import { selectDislike, selectLike } from '../features/likeSlice';
 import axios from 'axios';
@@ -20,13 +20,16 @@ const Navbar = () => {
     const handleQuestion = (e)=> {
         e.preventDefault();
         setOpenModal(false);
-        
+        axios.post('http://localhost:8000/post/create',{
+            
+        })
         setInput("");
         setInputUrl("");
     }
     const useLogout = () =>{
         axios.get('http://localhost:8000/user/logout',{},{ withCredentials : true })
         .then(dispatch(logout()))
+        .then(dispatch(loadingState(false)))
         
     }
     return (
@@ -84,8 +87,8 @@ const Navbar = () => {
                     <h5>공유하기</h5>
                     </div>
                     <div className="modal_info">
-                        <Avatar src={user.photo}/>
-                        <p>질문자 : {user.displayName?user.displayName:user.email}</p>
+                        <Avatar/>
+                        <p>질문자 : {user.user_nickname}</p>
                         <div className="modal_scope">
                             <PeopleAltOutlined/>
                             <p>전체공개</p>

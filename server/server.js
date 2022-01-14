@@ -46,10 +46,10 @@ app.use(passport.session());
 
 passport.serializeUser(function (user, done) { 
     done(null, user.UserEmail); 
+    
   });
   
 passport.deserializeUser(function (userEmail, done) { 
-    console.log(userEmail);
     db.query(
       'SELECT * FROM jaedobook.user WHERE UserEmail=?',
       [userEmail],
@@ -59,22 +59,24 @@ passport.deserializeUser(function (userEmail, done) {
             if(result.length>0){
                 user=result[0];
                 done(null, user);
+                
             }else{
                 return done(err);
             }
         }else{
             return done(err);
+            
         }
-      });
-  });
-  passport.use(new LocalStrategy( {
-      usernameField:'user_email',
-      passwordField: 'user_pw',
-      session:true
-  },
+        });
+    });
+    passport.use(new LocalStrategy( {
+        usernameField:'user_email',
+        passwordField: 'user_pw',
+        session:true
+    },
     function (username, password, done) {
-       
-      db.query(
+    
+        db.query(
         'SELECT * FROM jaedobook.user WHERE UserEmail=?',
         [username],
         function (err, result) {

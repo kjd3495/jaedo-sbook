@@ -8,6 +8,7 @@ import { login } from '../features/userSlice'
 import  Modal from 'react-modal'
 import moment from 'moment'
 import 'moment/locale/ko'
+axios.defaults.withCredentials = true;
 
 const Login = () => {
     const[email,setEmail]=useState("");

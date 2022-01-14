@@ -10,6 +10,17 @@ const Feed = () => {
     return (
         <div className="feed">
             <Box/>
+            {posts.map(({id,question})=>
+            (
+                <Post key={id} Id={id}
+                image={question.imageUrl}
+                question={question.question}
+                timestamp={question.timestamp}
+                QuestionUser={question.user}
+                like={question.like}
+                dislike={question.dislike}/>
+            )
+            )}
             
         </div>
     )

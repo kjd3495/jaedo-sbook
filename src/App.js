@@ -2,14 +2,15 @@ import './App.css';
 import React, {useEffect, useState} from 'react';
 import Main from './components/Main';
 import Login from './components/Login';
-import { selectUser } from './features/userSlice';
+import { selectLoading, selectUser } from './features/userSlice';
 import {useDispatch, useSelector} from 'react-redux';
-import {login, logout} from './features/userSlice';
+import {login, loadingState} from './features/userSlice';
 import axios from 'axios';
 function App() {
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(true)
+  const loading = useSelector(selectLoading);
+  
     useEffect( ()=> {
     axios.get('http://localhost:8000/check/login',{},{withCredentials: true})
     .then(res=>{
@@ -23,7 +24,8 @@ function App() {
       }));
      console.log(res.data);
       }else {
-        setLoading(false);
+        dispatch(loadingState(false));
+        
         
       }
       })  
@@ -34,7 +36,7 @@ function App() {
     <div className="App">
         
         {
-          user!==null ? <Main/>:<Login/>
+          user? <Main/>:(loading?<div>로딩중입니다....</div>:<Login/>)
         }
     </div>
   );

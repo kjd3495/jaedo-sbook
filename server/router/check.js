@@ -5,7 +5,9 @@ const db = require('../config/db');
 router.get('/login',(req, res)=>{
     if(req.user){
         res.send(req.user);
-    }else { res.send(null);
+    }else { 
+        res.send(req.err);
+        
     }
 
     
